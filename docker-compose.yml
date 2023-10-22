@@ -1,0 +1,197 @@
+networks:
+  docker-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1001
+    networks:
+      - docker-network
+    ports:
+      - 80:3000/tcp
+    volumes:
+      - /home/{USERNAME}/docker/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1001
+      - TZ=Europe/Brussels
+      - AUTO_UPDATE=true
+    networks:
+      - docker-network
+    ports:
+      - 8191:8191/tcp
+  jackett:
+    container_name: jackett
+    image: lscr.io/linuxserver/jackett:latest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1001
+      - TZ=Europe/Brussels
+      - AUTO_UPDATE=true
+    networks:
+      - docker-network
+    ports:
+      - 9117:9117/tcp
+    volumes:
+      - /home/{USERNAME}/docker/jackett/config:/config
+      - /home/{USERNAME}/torrents:/downloads
+  kuma:
+    container_name: kuma
+    image: louislam/uptime-kuma:latest
+    restart: unless-stopped
+    networks:
+      - docker-network
+    ports:
+      - 3001:3001/tcp
+    volumes:
+      - /home/{USERNAME}/docker/kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+  overseerr:
+    container_name: overseerr
+    image: lscr.io/linuxserver/overseerr:latest
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Europe/Brussels
+    networks:
+      - docker-network
+    ports:
+      - 5055:5055/tcp
+    volumes:
+      - /home/{USERNAME}/docker/overseerr/config:/config
+  pihole:
+    container_name: pihole
+    restart: unless-stopped
+    image: pihole/pihole:latest
+    environment:
+      - TZ=Europe/Brussels
+    networks:
+      - docker-network
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 8001:80/tcp
+    volumes:
+      - /home/{USERNAME}/docker/pihole/config/etc-dnsmasq.d:/etc/dnsmasq.d
+      - /home/{USERNAME}/docker/pihole/config:/etc/pihole
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=1000
+      - PGID=1001
+      - TZ=Europe/Brussels
+      - VERSION=docker
+    volumes:
+      - /home/{USERNAME}/docker/plex/config:/config
+      - /home/{USERNAME}/docker/plex/transcode:/transcode
+      - /home/{USERNAME}/torrents:/torrents
+    devices:
+      - /dev/dri:/dev/dri
+    network_mode: host
+    restart: unless-stopped
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    networks:
+      - docker-network
+    environment:
+      - PUID=1000
+      - PGID=1001
+      - TZ=Etc/UTC
+    ports:
+      - 7878:7878
+    volumes:
+      - /home/{USERNAME}/docker/radarr/config:/config
+      - /home/{USERNAME}/torrents:/movies
+      - /home/{USERNAME}/torrents:/downloads
+    restart: unless-stopped
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    networks:
+      - docker-network
+    ports:
+      - 8989:8989/tcp
+    restart: unless-stopped
+    volumes:
+      - /home/{USERNAME}/docker/sonarr/config:/config
+      - /home/{USERNAME}/torrents:/downloads
+      - /home/{USERNAME}/torrents:/tv
+  speedtest:
+    container_name: speedtest
+    restart: unless-stopped
+    environment:
+      - OOKLA_EULA_GDPR=true
+    image: henrywhitaker3/speedtest-tracker:latest
+    networks:
+      - docker-network
+    ports:
+      - 8765:80/tcp
+    volumes:
+      - /home/{USERNAME}/docker/speedtest:/config
+  transmission:
+    container_name: transmission
+    image: lscr.io/linuxserver/transmission:latest
+    networks:
+      - docker-network
+    ports:
+      - 51413:51413/tcp
+      - 51413:51413/udp
+      - 9091:9091/tcp
+    restart: unless-stopped
+    volumes:
+      - /home/{USERNAME}/docker/transmission/config:/config
+      - /home/{USERNAME}/docker/transmission/watch:/watch
+      - /home/{USERNAME}/torrents:/downloads
+  unifi:
+    image: jacobalberty/unifi
+    container_name: unifi
+    restart: unless-stopped
+    ports:
+      - 10001:10001/udp
+      - 8080:8080
+      - 8443:8443
+      - 3478:3478/udp
+    environment:
+      - TZ=Europe/Brussels
+    volumes:
+      - /home/{USERNAME}/docker/unifi:/unifi
+    networks:
+      - docker-network
+  wireguard:
+    container_name: wireguard
+    restart: unless-stopped
+    environment:
+      - INTERNAL_SUBNET=192.168.2.0
+      - SERVERPORT=51820
+      - TZ=Europe/Brussels
+      - SERVERURL=david-monnom.be
+      - PEERDNS=192.168.1.6,cedav.local
+      - ALLOWEDIPS=192.168.0.100,192.168.2.0/24,192.168.1.0/24
+      - PGID=1001
+      - PEERS=bangkok,londre,paris,singapour
+      - PUID=1000
+      - HOME=/root
+    image: lscr.io/linuxserver/wireguard:latest
+    networks:
+      - docker-network
+    ports:
+      - 51820:51820/udp
+    volumes:
+      - /home/{USERNAME}/docker/wireguard/config:/config
+      - /lib/modules:/lib/modules

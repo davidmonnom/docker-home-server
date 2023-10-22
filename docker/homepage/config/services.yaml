@@ -1,0 +1,117 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+- Video Services:
+    - Plex:
+        icon: plex.svg
+        href: http://cedav.local:32400
+        description: Plex Media Server
+        server: my-docker
+        container: plex
+        widget:
+          type: plex
+          url: http://192.168.0.100:32400
+          key: <api_key>
+    - Overseerr:
+        icon: overseerr.svg
+        href: http://cedav.local:5055
+        description: Download Your Movies
+        server: my-docker
+        container: overseerr
+        widget:
+          type: overseerr
+          url: http://192.168.0.100:5055
+          key: <api_key>
+    - Radarr:
+        icon: radarr.svg
+        href: http://cedav.local:7878
+        description: Find your movies
+        server: my-docker
+        container: radarr
+        widget:
+            type: radarr
+            url: http://192.168.0.100:7878
+            key: <api_key>
+    - Sonarr:
+        icon: sonarr.svg
+        href: http://cedav.local:8989
+        description: Find your TV shows
+        server: my-docker
+        container: sonarr
+        widget:
+            type: sonarr
+            url: http://192.168.0.100:8989
+            key: <api_key>
+    - Jackett:
+        icon: jackett.svg
+        href: http://cedav.local:9117
+        description: Track your torrents
+        server: my-docker
+        container: jackett
+        widget:
+            type: jackett
+            url: http://192.168.0.100:9117
+- Other Services:
+    - Transmission:
+        icon: transmission.svg
+        href: http://cedav.local:9091
+        description: Download your torrents
+        server: my-docker
+        container: transmission
+        widget:
+            type: transmission
+            url: http://192.168.0.100:9091
+            rpcUrl: /transmission/
+    - Portainer:
+        icon: portainer.svg
+        href: https://cedav.local:9443
+        description: Manage your docker containers
+        server: my-docker
+        container: portainer
+        widget:
+            type: portainer
+            url: https://192.168.0.100:9443
+            env: 2
+            key: <api_key>
+    - Home Network:
+        container: unifi
+        icon: unifi.svg
+        href: https://cedav.local:8443
+        description: Manage your home network
+        server: my-docker
+    - Flaresolverr:
+        container: flaresolverr
+        icon: cloudflare.svg
+        href: http://cedav.local:8191
+        description: Bypass cloudflare
+        server: my-docker
+- Monitoring Services:
+    - Speedtest Tracker:
+        icon: librespeed.svg
+        href: http://cedav.local:8765
+        description: Monitor your internet speed
+        server: my-docker
+        container: speedtest
+        widget:
+            type: speedtest
+            url:  http://192.168.0.100:8765
+    - Kuma Uptime:
+        icon: uptime-kuma.svg
+        href: http://cedav.local:3001
+        description: Monitor your services
+        server: my-docker
+        container: kuma
+        widget:
+            type: uptimekuma
+            url: http://192.168.0.100:3001
+            slug: homepage
+    - Pi-Hole:
+        icon: pi-hole.svg
+        href: http://cedav.local:8001/admin
+        description: Manage your ad blocking and DNS
+        server: my-docker
+        container: pihole
+        widget:
+            type: pihole
+            url: http://192.168.0.100:8001
+            key: <api_key>
